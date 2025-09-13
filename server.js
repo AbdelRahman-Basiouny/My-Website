@@ -1,4 +1,4 @@
-// server.js (معدّل)
+// server.js (معدّل ليتماشى مع script.js)
 // يعتمد على: express, cors, nodemailer
 const express = require('express');
 const fs = require('fs').promises;
@@ -44,7 +44,7 @@ app.get('/api', (req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
-// جلب محتوى الموقع (sections, skills, projects, ...)
+// جلب محتوى الموقع
 app.get('/api/content', async (req, res) => {
   try {
     const db = await readDB();
@@ -55,8 +55,8 @@ app.get('/api/content', async (req, res) => {
   }
 });
 
-// استلام نموذج التواصل وحفظه وإرسال إشعار بالبريد (إن وُجدت متغيرات البيئة)
-app.post('/api/send-message', async (req, res) => {
+// دالة مشتركة لمعالجة الرسائل
+async function handleMessage(req, res) {
   try {
     const { name, email, message } = req.body || {};
     if (!name || !email || !message) {
@@ -76,7 +76,7 @@ app.post('/api/send-message', async (req, res) => {
     db.messages.push(entry);
     await writeDB(db);
 
-    // محاولة الإرسال عبر nodemailer إن كانت الإعدادات موجودة
+    // محاولة الإرسال عبر nodemailer إن وُجدت الإعدادات
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       try {
         const transporter = nodemailer.createTransport({
@@ -98,7 +98,6 @@ app.post('/api/send-message', async (req, res) => {
         console.log('Email sent to', mailOptions.to);
       } catch (mailErr) {
         console.warn('Failed to send email:', mailErr.message);
-        // لا نفشل الطلب لأننا حفظنا الرسالة في DB
       }
     } else {
       console.warn('EMAIL_USER / EMAIL_PASS not set — skipping email send.');
@@ -109,9 +108,13 @@ app.post('/api/send-message', async (req, res) => {
     console.error('send-message error:', err);
     res.status(500).send('حدث خطأ أثناء معالجة الرسالة.');
   }
-});
+}
 
-// أي طلب آخر: حاول إرسال index.html (مفيد لو خدمت الواجهة من نفس الخادم)
+// استلام الرسائل (المسارين يشتغلوا)
+app.post('/api/send-message', handleMessage);
+app.post('/api/contact', handleMessage);
+
+// أي طلب آخر: حاول إرسال index.html
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'public', 'index.html');
   res.sendFile(indexPath, (err) => {
