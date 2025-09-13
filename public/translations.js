@@ -1,0 +1,52 @@
+const translations = {
+    ar: {
+        logo: "عبدالرحمن بسيوني",
+        nav_home: "الرئيسية",
+        nav_about: "عنّي",
+        nav_skills: "المهارات",
+        nav_projects: "المشاريع",
+        nav_contact: "التواصل",
+        // النصوص المضافة لحل مشكلة الأزرار الفارغة
+        hero_btn_primary: "عرض المشاريع",
+        hero_btn_secondary: "تواصل معي",
+        project_link: "عرض المشروع",
+        contact_subtitle: "لديك مشروع أو فكرة؟ لا تتردد في مراسلتي.",
+        form_name: "اسمك الكامل",
+        form_email: "بريدك الإلكتروني",
+        form_message: "رسالتك",
+        form_submit: "إرسال الرسالة",
+        contact_info_title: "لا تتردد في التواصل!",
+        contact_info_desc: "أنا دائماً متاح لمناقشة مشاريع جديدة، أفكار إبداعية أو فرص لتكون جزءاً من رؤيتك.",
+        contact_info_location: "الموقع",
+        contact_info_email: "البريد الإلكتروني",
+        contact_info_phone: "الهاتف",
+        footer_text: "© 2025 جميع الحقوق محفوظة | تم التطوير بواسطة عبدالرحمن بسيوني",
+        modal_live_demo: "عرض حي",
+        modal_view_code: "عرض الكود"
+    },
+    en: {
+        logo: "Abdelrahman Basiouny",
+        nav_home: "Home",
+        nav_about: "About",
+        nav_skills: "Skills",
+        nav_projects: "Projects",
+        nav_contact: "Contact",
+        // Added texts to fix the empty buttons issue
+        hero_btn_primary: "View Projects",
+        hero_btn_secondary: "Contact Me",
+        project_link: "View Project",
+        contact_subtitle: "Have a project or an idea? Feel free to message me.",
+        form_name: "Your Full Name",
+        form_email: "Your Email",
+        form_message: "Your Message",
+        form_submit: "Send Message",
+        contact_info_title: "Don't Hesitate to Reach Out!",
+        contact_info_desc: "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
+        contact_info_location: "Location",
+        contact_info_email: "Email",
+        contact_info_phone: "Phone",
+        footer_text: "© 2025 All rights reserved | Developed by Abdelrahman Basiouny",
+        modal_live_demo: "Live Demo",
+        modal_view_code: "View Code"
+    }
+};

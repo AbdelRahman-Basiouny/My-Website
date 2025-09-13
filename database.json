@@ -1,0 +1,123 @@
+{
+  "projects": [
+    {
+      "id": 1757759781222,
+      "title_ar": "لوحة تحكم تفاعلية للمبيعات",
+      "title_en": "Interactive sales dashboard",
+      "desc_ar": "Power BI Dashboard يعرض مؤشرات الأداء الرئيسية وتحليلات المبيعات.",
+      "desc_en": "Power BI Dashboard displays KPIs and sales analytics.",
+      "image": "images\\projects\\project2.png",
+      "live_link": "https://stirring-kulfi-68072e.netlify.app/#",
+      "code_link": "https://stirring-kulfi-68072e.netlify.app/#"
+    },
+    {
+      "id": 1757759949856,
+      "title_ar": "أتمتة تقارير Excel",
+      "title_en": "Automate Excel reports",
+      "desc_ar": "ماكروز VBA لتسريع عمليات التقارير الشهرية.",
+      "desc_en": "VBA macros to speed up monthly reporting processes.",
+      "image": "images\\projects\\project1.png",
+      "live_link": "https://stirring-kulfi-68072e.netlify.app/#",
+      "code_link": ""
+    }
+  ],
+  "skills": [
+    {
+      "id": 1,
+      "icon": "fa-solid fa-file-excel",
+      "name_ar": "Excel (متقدم)",
+      "name_en": "Excel (Advanced)"
+    },
+    {
+      "id": 2,
+      "icon": "fa-solid fa-chart-simple",
+      "name_ar": "Power BI",
+      "name_en": "Power BI"
+    },
+    {
+      "id": 1757759301362,
+      "icon": "fa-solid fa-database",
+      "name_ar": "SQL",
+      "name_en": "SQL"
+    },
+    {
+      "id": 1757759361888,
+      "icon": "fa-brands fa-python",
+      "name_ar": "Python",
+      "name_en": "Python"
+    },
+    {
+      "id": 1757759393745,
+      "icon": "fa-solid fa-code",
+      "name_ar": "تطوير الويب",
+      "name_en": "Web development"
+    },
+    {
+      "id": 1757759413823,
+      "icon": "fa-solid fa-pen-nib",
+      "name_ar": "UI/UX Design",
+      "name_en": "UI/UX Design"
+    },
+    {
+      "id": 1757759529995,
+      "icon": "fa-solid fa-question-circle",
+      "name_ar": "SEO Optimization",
+      "name_en": "SEO Optimization"
+    }
+  ],
+  "sections": [
+    {
+      "id": 1,
+      "type": "hero",
+      "order": 1,
+      "content": {
+        "greeting_key_ar": "مرحباً، أنا عبدالرحمن بسيوني",
+        "greeting_key_en": "Hello, I'm Abdelrahman Basiouny",
+        "title_key_ar": "محلل بيانات",
+        "title_key_en": "Data Analyst",
+        "subtitle_key_ar": "أحلل البيانات وأحوّل الأرقام إلى رؤى قيمة تساعد على اتخاذ القرار.",
+        "subtitle_key_en": "I analyze data and turn numbers into valuable insights that help in decision-making."
+      }
+    },
+    {
+      "id": 2,
+      "type": "about",
+      "order": 2,
+      "content": {
+        "title_key_ar": "عنّي",
+        "title_key_en": "About Me",
+        "p1_ar": "محلل بيانات محترف يمتلك خبرة عملية في التعامل مع Excel, Power BI, SQL, و Python. أتمتع بقدرة عالية على تحليل البيانات المعقدة واستخلاص رؤى دقيقة تدعم اتخاذ القرار.",
+        "p1_en": "A professional Data Analyst with hands-on experience in Excel, Power BI, SQL, and Python. I have a strong ability to analyze complex data and extract accurate insights that support decision-making.",
+        "p2_ar": "متخصص في تصميم لوحات معلومات تفاعلية، وكتابة استعلامات فعّالة، وأتمتة التقارير. شغوف بحل المشكلات وتقديم نتائج موثوقة.",
+        "p2_en": "Specialized in designing interactive dashboards, writing effective queries, and automating reports. Passionate about problem-solving and delivering reliable results."
+      }
+    },
+    {
+      "id": 3,
+      "type": "skills",
+      "order": 3,
+      "content": {
+        "title_key_ar": "مهاراتي",
+        "title_key_en": "My Skills"
+      }
+    },
+    {
+      "id": 4,
+      "type": "projects",
+      "order": 4,
+      "content": {
+        "title_key_ar": "مشاريعي",
+        "title_key_en": "My Projects"
+      }
+    },
+    {
+      "id": 5,
+      "type": "contact",
+      "order": 5,
+      "content": {
+        "title_key_ar": "تواصل معي",
+        "title_key_en": "Contact Me"
+      }
+    }
+  ]
+}

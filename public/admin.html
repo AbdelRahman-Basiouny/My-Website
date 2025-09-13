@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cba3a006-d54f-4a4e-a07a-c3ab57e7edef-00-iqwqlk8efa5l.riker.replit.dev/" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="admin-page">
+        <header class="admin-header">
+            <h1>لوحة التحكم</h1>
+            <p class="admin-subtitle">أهلاً بك، عبدالرحمن عادل بسيوني</p>
+        </header>
+        <nav class="admin-nav">
+            <button class="nav-button" data-modal="projects"><i class="fa-solid fa-briefcase"></i> إدارة المشاريع</button>
+            <button class="nav-button" data-modal="skills"><i class="fa-solid fa-star"></i> إدارة المهارات</button>
+            <button class="nav-button" data-modal="sections"><i class="fa-solid fa-layer-group"></i> إدارة الأقسام</button>
+        </nav>
+    </div>
+
+    <div id="admin-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2 id="modal-title"></h2>
+                <button id="close-modal-btn" class="close-modal">&times;</button>
+            </header>
+            <div id="modal-body-content" class="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <div id="templates" style="display: none;">
+        <div id="projects-template">
+            <div>
+                <h3 id="project-form-title">إضافة مشروع جديد</h3>
+                <form id="project-form" class="admin-form">
+                    <input type="hidden" name="id">
+                    <div class="form-group"><label>عنوان (عربي)</label><input class="form-group-input" type="text" name="title_ar" required></div>
+                    <div class="form-group"><label>عنوان (إنجليزي)</label><input class="form-group-input" type="text" name="title_en" required></div>
+                    <div class="form-group"><label>وصف (عربي)</label><textarea class="form-group-textarea" name="desc_ar" required></textarea></div>
+                    <div class="form-group"><label>وصف (إنجليزي)</label><textarea class="form-group-textarea" name="desc_en" required></textarea></div>
+                    <div class="form-group"><label>مسار الصورة</label><input class="form-group-input" type="text" name="image" required placeholder="images/projects/project1.png"></div>
+                    <div class="form-group"><label>رابط العرض</label><input class="form-group-input" type="url" name="live_link"></div>
+                    <div class="form-group"><label>رابط الكود</label><input class="form-group-input" type="url" name="code_link"></div>
+                    <button type="submit" class="btn btn-primary">حفظ المشروع</button>
+                </form>
+            </div>
+            <div>
+                <h3>المشاريع الحالية</h3>
+                <div id="project-list" class="list-container"></div>
+            </div>
+        </div>
+
+        <div id="skills-template">
+            <div>
+                <h3 id="skill-form-title">
+                    إضافة مهارة جديدة
+                    <span id="skill-icon-preview"><i class="fa-solid fa-question-circle"></i></span>
+                </h3>
+                <form id="skill-form" class="admin-form">
+                     <input type="hidden" name="id">
+                     <input type="hidden" name="icon" id="skill-icon-input" value="fa-solid fa-question-circle">
+                     <div class="form-group"><label>اسم المهارة (عربي)</label><input id="skill-name-ar" class="form-group-input" type="text" name="name_ar" required></div>
+                     <div class="form-group"><label>اسم المهارة (إنجليزي)</label><input id="skill-name-en" class="form-group-input" type="text" name="name_en" required></div>
+                     <button type="submit" class="btn btn-primary">حفظ المهارة</button>
+                </form>
+            </div>
+            <div>
+                <h3>المهارات الحالية</h3>
+                <div id="skill-list" class="list-container"></div>
+            </div>
+        </div>
+
+        <div id="sections-template">
+             <div>
+                <h3 id="section-form-title">إضافة/تعديل قسم</h3>
+                <form id="section-form" class="admin-form">
+                     <input type="hidden" name="id">
+                     <div class="form-group">
+                         <label>نوع القسم</label>
+                         <select name="type" class="form-group-input" required>
+                            <option value="hero">Hero</option>
+                            <option value="about">About</option>
+                            <option value="skills">Skills</option>
+                            <option value="projects">Projects</option>
+                            <option value="contact">Contact</option>
+                         </select>
+                     </div>
+                     <div class="form-group">
+                         <label>محتوى القسم (بصيغة JSON)</label>
+                         <textarea name="content" id="section-content-editor" class="form-group-textarea" rows="10" required placeholder='{\n  "title_key_ar": "عنوان القسم",\n  "title_key_en": "Section Title"\n}'></textarea>
+                     </div>
+                     <button type="submit" class="btn btn-primary">حفظ القسم</button>
+                </form>
+            </div>
+            <div class="sections-list-container">
+                <h3>الأقسام الحالية (اسحب للترتيب)</h3>
+                <div id="section-list" class="list-container"></div>
+                <button id="save-order-btn" class="btn btn-primary">حفظ الترتيب</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE = 'hhttps://cba3a006-d54f-4a4e-a07a-c3ab57e7edef-00-iqwqlk8efa5l.riker.replit.dev/';
+            let siteData = { projects: [], skills: [], sections: [] };
+            
+            const modal = document.getElementById('admin-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body-content');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            const iconMap = {
+                'excel': 'fa-solid fa-file-excel', 'اكسل': 'fa-solid fa-file-excel',
+                'power bi': 'fa-solid fa-chart-simple', 'باور بي اي': 'fa-solid fa-chart-simple',
+                'sql': 'fa-solid fa-database',
+                'python': 'fa-brands fa-python', 'بايثون': 'fa-brands fa-python',
+                'javascript': 'fa-brands fa-js', 'جافاسكريبت': 'fa-brands fa-js',
+                'html': 'fa-brands fa-html5',
+                'css': 'fa-brands fa-css3-alt',
+                'react': 'fa-brands fa-react', 'رياكت': 'fa-brands fa-react',
+                'web': 'fa-solid fa-code', 'ويب': 'fa-solid fa-code',
+                'responsive': 'fa-solid fa-mobile-screen-button', 'متجاوب': 'fa-solid fa-mobile-screen-button',
+                'ui/ux': 'fa-solid fa-pen-nib', 'واجهات': 'fa-solid fa-pen-nib'
+            };
+
+            const findIconForSkill = (name) => {
+                const lowerCaseName = name.toLowerCase();
+                for (const key in iconMap) {
+                    if (lowerCaseName.includes(key)) {
+                        return iconMap[key];
+                    }
+                }
+                return 'fa-solid fa-question-circle';
+            };
+
+            const showModal = (title, templateId) => {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = document.getElementById(templateId).innerHTML;
+                modal.classList.add('visible');
+            };
+            const closeModal = () => modal.classList.remove('visible');
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+            const fetchData = async (endpoint) => { try { const res = await fetch(`${API_BASE}/${endpoint}`); return await res.json(); } catch (e) { console.error(e); return []; }};
+            const sendData = async (endpoint, method, body) => await fetch(`${API_BASE}/${endpoint}`, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+            const renderProjects = () => {
+                const list = modalBody.querySelector('#project-list');
+                const form = modalBody.querySelector('#project-form');
+                list.innerHTML = siteData.projects.map(p => `
+                    <div class="list-item" data-id="${p.id}">
+                        <p>${p.title_ar}</p>
+                        <div class="actions">
+                            <button class="btn-edit" data-type="project">تعديل</button>
+                            <button class="btn-delete" data-type="project">حذف</button>
+                        </div>
+                    </div>`).join('');
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const id = formData.get('id');
+                    const body = Object.fromEntries(formData.entries());
+                    if (!id) delete body.id;
+                    const endpoint = id ? `projects/${id}` : 'projects';
+                    const method = id ? 'PUT' : 'POST';
+                    await sendData(endpoint, method, body);
+                    alert('تم حفظ المشروع!');
+                    closeModal();
+                };
+            };
+            
+            const renderSkills = () => {
+                 const list = modalBody.querySelector('#skill-list');
+                 const form = modalBody.querySelector('#skill-form');
+                 list.innerHTML = siteData.skills.map(s => `
+                    <div class="list-item" data-id="${s.id}" data-icon="${s.icon}" data-name-ar="${s.name_ar}" data-name-en="${s.name_en}">
+                        <p><i class="${s.icon}"></i> ${s.name_ar}</p>
+                        <div class="actions">
+                            <button class="btn-edit" data-type="skill">تعديل</button>
+                            <button class="btn-delete" data-type="skill">حذف</button>
+                        </div>
+                    </div>`).join('');
+                 form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const id = formData.get('id');
+                    const body = Object.fromEntries(formData.entries());
+                    if (!id) delete body.id;
+                    const endpoint = id ? `skills/${id}` : 'skills';
+                    const method = id ? 'PUT' : 'POST';
+                    await sendData(endpoint, method, body);
+                    alert('تم حفظ المهارة!');
+                    closeModal();
+                };
+            };
+
+            const renderSections = () => {
+                const list = modalBody.querySelector('#section-list');
+                const form = modalBody.querySelector('#section-form');
+                const saveOrderBtn = modalBody.querySelector('#save-order-btn');
+                siteData.sections.sort((a,b) => a.order - b.order);
+                list.innerHTML = siteData.sections.map(s => `
+                    <div class="list-item" data-id="${s.id}">
+                        <p>${s.type.toUpperCase()}</p>
+                        <div class="actions">
+                            <button class="btn-edit" data-type="section">تعديل</button>
+                            <button class="btn-delete" data-type="section">حذف</button>
+                        </div>
+                    </div>`).join('');
+                new Sortable(list, { animation: 150 });
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const id = formData.get('id');
+                    let content;
+                    try {
+                        content = JSON.parse(formData.get('content'));
+                    } catch(err) {
+                        alert('خطأ في صيغة JSON. الرجاء المراجعة.');
+                        return;
+                    }
+                    const body = { type: formData.get('type'), content };
+                    if (!id) {
+                        body.order = siteData.sections.length + 1;
+                    }
+                    const endpoint = id ? `sections/${id}` : 'sections';
+                    const method = id ? 'PUT' : 'POST';
+                    await sendData(endpoint, method, body);
+                    alert('تم حفظ القسم!');
+                    closeModal();
+                };
+                saveOrderBtn.onclick = async () => {
+                    const orderedIds = [...list.children].map(item => parseInt(item.dataset.id));
+                    const orderedSections = orderedIds.map((id, index) => {
+                        const section = siteData.sections.find(s => s.id === id);
+                        return { ...section, order: index + 1 };
+                    });
+                    await sendData('sections/order', 'PUT', orderedSections);
+                    alert('تم حفظ الترتيب!');
+                    closeModal();
+                };
+            };
+            
+            modalBody.addEventListener('click', async (e) => {
+                const button = e.target.closest('.btn-edit, .btn-delete');
+                if (!button) return;
+
+                const item = button.closest('.list-item');
+                const id = parseInt(item.dataset.id);
+                const type = button.dataset.type;
+
+                if (button.classList.contains('btn-delete')) {
+                    if (confirm('هل أنت متأكد من الحذف؟')) {
+                        await sendData(`${type}s/${id}`, 'DELETE');
+                        alert('تم الحذف بنجاح!');
+                        closeModal();
+                    }
+                } else if (button.classList.contains('btn-edit')) {
+                    const form = modalBody.querySelector(`#${type}-form`);
+                    const data = siteData[`${type}s`].find(d => d.id === id);
+                    if(!data) return;
+
+                    form.querySelector('h3').textContent = 'تعديل ' + type;
+                    form.id.value = data.id;
+
+                    if (type === 'skill') {
+                        form.name_ar.value = data.name_ar;
+                        form.name_en.value = data.name_en;
+                        form.icon.value = data.icon;
+                        modalBody.querySelector('#skill-icon-preview').innerHTML = `<i class="${data.icon}"></i>`;
+                    } else if (type === 'section') {
+                        form.type.value = data.type;
+                        form.content.value = JSON.stringify(data.content, null, 2);
+                    } else if (type === 'project') {
+                         Object.keys(data).forEach(key => {
+                            if(form[key]) form[key].value = data[key];
+                        });
+                    }
+                }
+            });
+
+            document.querySelector('.admin-nav').addEventListener('click', async (e) => {
+                const button = e.target.closest('.nav-button');
+                if (!button) return;
+                
+                const modalName = button.dataset.modal;
+                await fetchData(modalName).then(data => siteData[modalName] = data);
+
+                if (modalName === 'projects') {
+                    showModal('إدارة المشاريع', 'projects-template');
+                    renderProjects();
+                } else if (modalName === 'skills') {
+                    showModal('إدارة المهارات', 'skills-template');
+                    renderSkills();
+                    
+                    const nameArInput = modalBody.querySelector('#skill-name-ar');
+                    const nameEnInput = modalBody.querySelector('#skill-name-en');
+                    const iconPreview = modalBody.querySelector('#skill-icon-preview');
+                    const iconInput = modalBody.querySelector('#skill-icon-input');
+                    const updateIcon = (event) => {
+                        const iconClass = findIconForSkill(event.target.value);
+                        iconPreview.innerHTML = `<i class="${iconClass}"></i>`;
+                        iconInput.value = iconClass;
+                    };
+                    nameArInput.addEventListener('input', updateIcon);
+                    nameEnInput.addEventListener('input', updateIcon);
+
+                } else if (modalName === 'sections') {
+                    showModal('إدارة الأقسام', 'sections-template');
+                    renderSections();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
