@@ -1,4 +1,4 @@
-// server.js (معدّل ليتماشى مع script.js)
+// server.js (معدّل)
 // يعتمد على: express, cors, nodemailer
 const express = require('express');
 const fs = require('fs').promises;
@@ -44,7 +44,7 @@ app.get('/api', (req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
-// جلب محتوى الموقع
+// جلب محتوى الموقع (sections, skills, projects, ...)
 app.get('/api/content', async (req, res) => {
   try {
     const db = await readDB();
@@ -76,34 +76,38 @@ async function handleMessage(req, res) {
     db.messages.push(entry);
     await writeDB(db);
 
-    // محاولة الإرسال عبر nodemailer إن وُجدت الإعدادات
+    // ✅ الرد للمستخدم مباشرة
+    res.send('تم استلام رسالتك. شكرًا لتواصلك.');
+
+    // ✉️ المحاولة لإرسال الإيميل في الخلفية (async)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      try {
-        const transporter = nodemailer.createTransport({
-          service: process.env.EMAIL_SERVICE || 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-          }
-        });
+      (async () => {
+        try {
+          const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SERVICE || 'gmail',
+            auth: {
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_PASS
+            }
+          });
 
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: process.env.NOTIFY_EMAIL || process.env.EMAIL_USER,
-          subject: `رسالة جديدة من ${name}`,
-          text: `اسم: ${name}\nبريد: ${email}\n\n${message}`
-        };
+          const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.NOTIFY_EMAIL || process.env.EMAIL_USER,
+            subject: `رسالة جديدة من ${name}`,
+            text: `اسم: ${name}\nبريد: ${email}\n\n${message}`
+          };
 
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent to', mailOptions.to);
-      } catch (mailErr) {
-        console.warn('Failed to send email:', mailErr.message);
-      }
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent to', mailOptions.to);
+        } catch (mailErr) {
+          console.warn('Failed to send email:', mailErr.message);
+        }
+      })();
     } else {
       console.warn('EMAIL_USER / EMAIL_PASS not set — skipping email send.');
     }
 
-    res.send('تم استلام رسالتك. شكرًا لتواصلك.');
   } catch (err) {
     console.error('send-message error:', err);
     res.status(500).send('حدث خطأ أثناء معالجة الرسالة.');
@@ -114,7 +118,7 @@ async function handleMessage(req, res) {
 app.post('/api/send-message', handleMessage);
 app.post('/api/contact', handleMessage);
 
-// أي طلب آخر: حاول إرسال index.html
+// أي طلب آخر: حاول إرسال index.html (مفيد لو خدمت الواجهة من نفس الخادم)
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'public', 'index.html');
   res.sendFile(indexPath, (err) => {
