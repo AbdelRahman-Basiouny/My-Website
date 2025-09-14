@@ -350,7 +350,7 @@ function setupContactForm() {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch(`${API_BASE}/api/contact`, {
+            const response = await fetch(`${API_BASE}/api/send-message`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
