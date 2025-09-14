@@ -9,8 +9,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = path.join(__dirname, 'database.json');
 
-// إعدادات عامة
-app.use(cors());
+// 🎯 إعداد CORS للسماح لـ Netlify والدومينات المصرح بها
+const allowedOrigins = [
+  'http://localhost:3000', // للتجربة محلياً
+  'https://abdelrahmanbasiouny.netlify.app' // موقعك على Netlify
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -92,7 +106,7 @@ async function handleMessage(req, res) {
             }
           });
         } else {
-          // 📩 Gmail (مش شغال غالبًا على Railway)
+          // 📩 Gmail (غالبًا مش شغال على Railway)
           transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
