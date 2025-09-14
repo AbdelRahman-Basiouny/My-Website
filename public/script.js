@@ -1,14 +1,9 @@
 // ==========================================================
-// المحرك الرئيسي للتطبيق (النسخة المعدلة مع API_BASE)
+// المحرك الرئيسي للتطبيق (نسخة محدثة مع API_BASE)
 // ==========================================================
 
-// 0. إعداد مسار الـ API
-// لو الفرونت والباك في نفس السيرفر (ملفات الواجهة داخل مجلد public على Render) => اترك ''.
-// لو الفرونت على Netlify والباك على Render => ضع رابط الباك هنا مثلاً:
-// const API_BASE = 'https://your-backend.onrender.com';
-const API_BASE = '';
-
-// ----------------------------------------------------------
+// رابط الباك إند على Railway
+const API_BASE = 'https://my-website-production-f331.up.railway.app';
 
 let siteContent = {};
 let currentLang = localStorage.getItem('lang') || 'ar';
@@ -82,7 +77,7 @@ function initializeAllFunctions() {
 }
 
 // ==========================================================
-// دوال بناء قوالب HTML لكل قسم (كما هي بدون تعديل كبير)
+// دوال بناء قوالب HTML (كما هي من النسخة السابقة)
 // ==========================================================
 
 function getNavAndHeroHTML(content) {
@@ -355,7 +350,7 @@ function setupContactForm() {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch(`${API_BASE}/api/send-message`, {
+            const response = await fetch(`${API_BASE}/api/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
