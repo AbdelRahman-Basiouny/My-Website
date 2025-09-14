@@ -1,5 +1,4 @@
-// server.js (معدّل)
-// يعتمد على: express, cors, nodemailer
+// server.js (دعم Gmail وأي SMTP مثل Brevo)
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
@@ -10,15 +9,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = path.join(__dirname, 'database.json');
 
-// إعدادات عامة
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// إذا وضعت ملفات الواجهة في مجلد 'public' فسيخدمها الخادم مباشرة
 app.use(express.static(path.join(__dirname, 'public')));
 
-// مساعدة: قراءة / كتابة database.json
+// قراءة / كتابة DB
 async function readDB() {
   try {
     const txt = await fs.readFile(DB_PATH, 'utf8');
@@ -32,19 +28,16 @@ async function readDB() {
     throw err;
   }
 }
-
 async function writeDB(data) {
   await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
 }
 
-// ---- نقاط النهاية (API) ----
-
-// صحة الخادم
+// اختبار السيرفر
 app.get('/api', (req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
-// جلب محتوى الموقع (sections, skills, projects, ...)
+// محتوى الموقع
 app.get('/api/content', async (req, res) => {
   try {
     const db = await readDB();
@@ -55,7 +48,7 @@ app.get('/api/content', async (req, res) => {
   }
 });
 
-// دالة مشتركة لمعالجة الرسائل
+// معالجة الرسائل (حفظ + رد سريع + إرسال إيميل في الخلفية)
 async function handleMessage(req, res) {
   try {
     const { name, email, message } = req.body || {};
@@ -63,7 +56,7 @@ async function handleMessage(req, res) {
       return res.status(400).send('الرجاء إكمال الاسم، البريد، والرسالة.');
     }
 
-    // أحفظ الرسالة في database.json
+    // حفظ الرسالة
     const db = await readDB();
     db.messages = db.messages || [];
     const entry = {
@@ -76,49 +69,67 @@ async function handleMessage(req, res) {
     db.messages.push(entry);
     await writeDB(db);
 
-    // ✅ الرد للمستخدم مباشرة
+    // رد سريع للعميل (لا انتظار للإيميل)
     res.send('تم استلام رسالتك. شكرًا لتواصلك.');
 
-    // ✉️ المحاولة لإرسال الإيميل في الخلفية (async)
+    // إرسال الإيميل في الخلفية (لا يوقف الاستجابة للمستخدم)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       (async () => {
         try {
-          const transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE || 'gmail',
-            auth: {
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS
-            }
-          });
+          let transporterConfig;
+          if ((process.env.EMAIL_SERVICE || '').toLowerCase() === 'gmail') {
+            transporterConfig = {
+              service: 'gmail',
+              auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+              }
+            };
+          } else {
+            // Generic SMTP (Brevo أو أي مزوّد)
+            transporterConfig = {
+              host: process.env.EMAIL_HOST || 'smtp-relay.brevo.com',
+              port: parseInt(process.env.EMAIL_PORT || '587', 10),
+              secure: process.env.EMAIL_SECURE === 'true' || false, // true for 465, false for 587
+              auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+              },
+              // ضبط وقت الاتصال أقل إن لزم (مثلاً 10s)
+              connectionTimeout: 10000,
+              greetingTimeout: 10000,
+              socketTimeout: 10000
+            };
+          }
+
+          const transporter = nodemailer.createTransport(transporterConfig);
 
           const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
             to: process.env.NOTIFY_EMAIL || process.env.EMAIL_USER,
             subject: `رسالة جديدة من ${name}`,
             text: `اسم: ${name}\nبريد: ${email}\n\n${message}`
           };
 
-          await transporter.sendMail(mailOptions);
-          console.log('Email sent to', mailOptions.to);
+          const info = await transporter.sendMail(mailOptions);
+          console.log('📩 Email sent:', info && (info.response || info.messageId) );
         } catch (mailErr) {
-          console.warn('Failed to send email:', mailErr.message);
+          console.warn('⚠️ Failed to send email:', mailErr && mailErr.message ? mailErr.message : mailErr);
         }
       })();
     } else {
-      console.warn('EMAIL_USER / EMAIL_PASS not set — skipping email send.');
+      console.warn('⚠️ EMAIL_USER / EMAIL_PASS not set — skipping email send.');
     }
-
   } catch (err) {
     console.error('send-message error:', err);
     res.status(500).send('حدث خطأ أثناء معالجة الرسالة.');
   }
 }
 
-// استلام الرسائل (المسارين يشتغلوا)
 app.post('/api/send-message', handleMessage);
 app.post('/api/contact', handleMessage);
 
-// أي طلب آخر: حاول إرسال index.html (مفيد لو خدمت الواجهة من نفس الخادم)
+// أي طلب آخر يخدم الواجهة
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'public', 'index.html');
   res.sendFile(indexPath, (err) => {
@@ -128,7 +139,6 @@ app.get('*', (req, res) => {
   });
 });
 
-// شغّل الخادم
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
